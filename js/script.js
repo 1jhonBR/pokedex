@@ -5,7 +5,17 @@ const form = document.querySelector('.form')
 const input = document.querySelector('.input__search')
 const buttonPrev = document.querySelector('.btn-prev')
 const buttonNext = document.querySelector('.btn-next')
+
 let searchPokemon = 1;
+let allPokemonNames = []; // Guardar os nomes todos
+
+const fetchAllPokemonNames = async () => {
+  const response = await fetch('https://pokeapi.co/api/v2/pokemon?limit=100000')
+  const data = await response.json()
+  allPokemonNames = data.results.map(pokemon => pokemon.name)
+}
+
+fetchAllPokemonNames();
 
 const fetchPokemon = async (pokemon) => {
   const APIResponse = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemon}`)
@@ -38,7 +48,15 @@ const renderPokemon = async (pokemon) => {
 
 form.addEventListener('submit', (event) => {
   event.preventDefault();
-  renderPokemon(input.value.toLowerCase());
+  // renderPokemon(input.value.toLowerCase());
+  const searchTerm = input.value.toLowerCase()
+  const matchedPokemon = allPokemonNames.filter(name => name.includes(searchTerm))
+
+  if (matchedPokemon.length > 0) {
+    renderPokemon(matchedPokemon[0]);
+  } else {
+    renderPokemon(searchTerm)
+  }
 })
 
 buttonPrev.addEventListener('click', () => {
